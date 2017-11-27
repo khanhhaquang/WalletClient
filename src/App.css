@@ -2,33 +2,35 @@
   position: relative;
   border-radius: 2vw;
   width: 50vw;
-  height: 90vh;
+  height: 95vh;
   border: 2px solid lightslategray;
   text-align: center;
   margin-top: 3vh;
+  -webkit-animation: slide 0.8s ease ; /* Safari 4.0 - 8.0 */
+  animation: slide 0.8s ease ;
+}
+
+@-webkit-keyframes slide {
+  0%   {left: 100%;}
+  100% {left: 0;}
+}
+
+/* Standard syntax */
+@keyframes slide {
+  0%   {left: 100%;}
+  100% {left: 0;}
 }
 
 h1{
   margin-top: 1vh;
   font-family: 'Roboto', sans-serif;
-  color: lightcoral  
+  color: lightcoral
 }
 .usersite h3{
   position: relative;
   font-family: 'Roboto', sans-serif;
 }
 
-h3:after{
-  content: "";
-  position: absolute;
-  display: flex;
-  right: 33%;
-  bottom: -1vh;
-  width: 2.3vw;
-  height: 2.3vw;
-  background-image: url("https://www.ukbullion.com/media/catalog/product/cache/1/image/400x400/9df78eab33525d08d6e5fb8d27136e95/g/o/gold-dragon-coin-front-400x400.png");
-  background-size: 100% 100%;
-}
 .history{
   background: green;
 	background: -moz-radial-gradient(0% 100%, ellipse cover, rgba(89, 93, 95, 0.4) 10%,rgba(165, 109, 26, 0) 40%),-moz-linear-gradient(top,  rgba(57,173,219,.25) 0%, rgba(42,60,87,.4) 100%), -moz-linear-gradient(-45deg,  lightyellow 0%, #092756 100%);
@@ -78,12 +80,12 @@ h3:after{
 }
 .history h2 {
   margin-top: 3vh;
-  margin-bottom: 4vh; 
+  margin-bottom: 4vh;
   color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
 
   .login-form h2 {
   margin-top: 3vh;
-  margin-bottom: 4vh; 
+  margin-bottom: 4vh;
   color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
 .login-form button{
     width: 70%;
@@ -93,13 +95,13 @@ h3:after{
   }
 h4 {
   margin-top: 1.5vh;
-  margin-bottom: 1.5vh; 
+  margin-bottom: 1.5vh;
   color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
 
 
-.login-form input { 
+.login-form input {
   width: 80%;
-	margin-top: 3vh; 
+	margin-top: 3vh;
 	background: rgba(0,0,0,0.3);
 	border: none;
 	outline: none;
@@ -121,7 +123,7 @@ h4 {
 
 .signup-form h2 {
   margin-top: 3vh;
-  margin-bottom: 4vh; 
+  margin-bottom: 4vh;
   color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
 .signup-form button{
     width: 70%;
@@ -129,9 +131,9 @@ h4 {
     margin-left: auto;
     margin-right: auto;
   }
-.signup-form input { 
+.signup-form input {
   width: 80%;
-	margin-top: 3vh; 
+	margin-top: 3vh;
 	background: rgba(0,0,0,0.3);
 	border: none;
 	outline: none;
@@ -156,14 +158,14 @@ h4 {
 }
 
 @-webkit-keyframes mymove {
-  0%   {left: 100%;}
-  100% {left: 0%;}
+  0%   {opacity: 0;}
+  100% {opacity: 1;}
 }
 
 /* Standard syntax */
 @keyframes mymove {
-  0%   {left: 100%;}
-  100% {left: 0%;}
+  0%   {opacity: 0;}
+  100% {opacity: 1;}
 }
 
 .group-button{
@@ -198,7 +200,7 @@ h4 {
   max-height: 70%;
   margin-left: auto;
   margin-right: auto;
-  overflow-y:scroll; 
+  overflow-y:scroll;
 }
 
 .sendmoney-form{
@@ -223,9 +225,9 @@ h4 {
   margin-left: auto;
   margin-right: auto;
 }
-.sendmoney-form input { 
+.sendmoney-form input {
   width: 60%;
-	margin-top: 1vh; 
+	margin-top: 1vh;
 	background: rgba(0,0,0,0.3);
 	border: none;
 	outline: none;
@@ -268,9 +270,9 @@ h4 {
   margin-left: auto;
   margin-right: auto;
 }
-.history-form input { 
+.history-form input {
   width: 60%;
-	margin-top: 1vh; 
+	margin-top: 1vh;
 	background: rgba(0,0,0,0.3);
 	border: none;
 	outline: none;
@@ -296,5 +298,11 @@ h4 {
   max-height: 70%;
   margin-left: auto;
   margin-right: auto;
-  overflow-y: scroll; 
+  overflow-y: scroll;
+}
+
+#logout-btn{
+  position: absolute;
+  width: 20%;
+  top: 3vh;
 }

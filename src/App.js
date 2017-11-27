@@ -2,11 +2,16 @@ import React, { Component } from 'react';
 import './App.css';
 import Dashboard from './components/Dashboard.js';
 import UserSite from './components/UserSite.js';
+import { BrowserRouter } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom'
 
 class App extends Component {
   render() {
     return (
-      <Dashboard/>
+      <Switch>
+        <Route exact path='/' component={Dashboard}/>
+        <Route path='/usersite' component={UserSite}/>
+      </Switch>
     );
   }
 }

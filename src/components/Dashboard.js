@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 const STAGE_1 = 1;
 const STAGE_2 = 2;
 const STAGE_3 = 3;
+
 class History extends Component{
 
     renderList = () =>{
@@ -11,8 +12,8 @@ class History extends Component{
         return(
             <div className= "history">
                 <h2>History</h2>
-                <ul id ="list" class="list-group">
-                    <li class="list-group-item">Cras justo odio</li>
+                <ul id ="list" className="list-group">
+                    <li className="list-group-item">Cras justo odio</li>
                 </ul>
             </div>
         )
@@ -21,15 +22,27 @@ class History extends Component{
 
 
 class Login extends Component{
+    handleLogin = () => {
+      const username = this.refs.username.text;
+      const password = this.refs.password.text;
+      if(username && password){
+        window.location = '/usersite'
+      }
+      else{
+        this.setState({
+          errMes: "Username or Password is invalid!"
+        })
+      }
+    }
     render(){
         return(
             <div className= "login-form">
             <h2>Login</h2>
-            <form>
-                <input type="text" name="u" placeholder="Username" required="required" />
-                <input type="password" name="p" placeholder="Password" required="required" />
-                <button type="submit" className="btn btn-primary btn-block btn-large">Let me in.</button>
-            </form>
+            <div>
+                <input ref="username" type="text" name="u" placeholder="Username" required="required" />
+                <input ref="password" type="password" name="p" placeholder="Password" required="required" />
+                <button onClick={this.handleLogin.bind(this)} className="btn btn-primary btn-block btn-large">Let me in.</button>
+            </div>
             </div>
         )
     }
@@ -40,13 +53,13 @@ class Signup extends Component{
         return(
             <div className= "signup-form">
             <h2>Sign Up</h2>
-            <form>
+            <div>
                 <input type="text" name="u" placeholder="Username" required="required" />
                 <input type="password" name="p" placeholder="Password" required="required" />
                 <input type="password" name="p" placeholder="Confirm Password" required="required" />
-                
-                <button type="submit" className="btn btn-primary btn-block btn-large">Create my account</button>
-            </form>
+
+                <button className="btn btn-primary btn-block btn-large">Create my account</button>
+            </div>
             </div>
         )
     }
@@ -63,6 +76,8 @@ class Dashboard extends Component{
         }
     }
 
+
+
     renderForm = () => {
         switch(this.state.mainStage){
             case STAGE_1:
@@ -76,10 +91,10 @@ class Dashboard extends Component{
 
     renderGroupButton = () =>{
         return(
-            <div className="group-button"> 
+            <div className="group-button">
             <button onClick={() => { this.setState({ mainStage: 1})}} type="button" id="history-btn" className="btn btn-primary">History</button>
             <button onClick={() => { this.setState({ mainStage: 3})}} type="button" id="login-btn" className="btn btn-success">Log in</button>
-            <button onClick={() => { this.setState({ mainStage: 2})}} type="button" id="signup-btn" className="btn btn-info">Sign up</button> 
+            <button onClick={() => { this.setState({ mainStage: 2})}} type="button" id="signup-btn" className="btn btn-info">Sign up</button>
             </div>
         );
     }
