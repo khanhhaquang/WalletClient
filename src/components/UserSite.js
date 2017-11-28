@@ -8,14 +8,28 @@ class UserSite extends Component{
             money: 1000,
         }
     }
+
+    handleSendmoney = () =>{
+      const from_user = this.state.username;
+      const to_user = this.refs.to_user.value;
+      const money = this.refs.money.value;
+      if(to_user && money){
+
+      }
+      else{
+        alert("You missed something ?")
+      }
+    }
+
+
     renderSendMoney = () => {
         return(
             <div className= "sendmoney-form">
             <h4>Send money</h4>
             <div>
-                <input type="number" name="u" placeholder="Money" required="required" />
-                <input type="text" name="p" placeholder="Send to" required="required" />
-                <button className="btn btn-primary btn-block btn-large">Send</button>
+                <input ref="money" type="number" name="u" placeholder="Money" required="required" />
+                <input ref="to_user" type="text" name="p" placeholder="Send to" required="required" />
+                <button onClick={this.handleSendmoney.bind(this)} className="btn btn-primary btn-block btn-large">Send</button>
             </div>
             </div>
         )
@@ -34,6 +48,7 @@ class UserSite extends Component{
     }
 
     handleLogout = () =>{
+      sessionStorage.clear();
       window.location ="/";
     }
     render(){

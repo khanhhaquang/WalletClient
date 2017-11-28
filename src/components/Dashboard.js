@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 const STAGE_1 = 1;
 const STAGE_2 = 2;
 const STAGE_3 = 3;
@@ -22,18 +23,7 @@ class History extends Component{
 
 
 class Login extends Component{
-    handleLogin = () => {
-      const username = this.refs.username.text;
-      const password = this.refs.password.text;
-      if(username && password){
-        window.location = '/usersite'
-      }
-      else{
-        this.setState({
-          errMes: "Username or Password is invalid!"
-        })
-      }
-    }
+
     render(){
         return(
             <div className= "login-form">
@@ -41,7 +31,7 @@ class Login extends Component{
             <div>
                 <input ref="username" type="text" name="u" placeholder="Username" required="required" />
                 <input ref="password" type="password" name="p" placeholder="Password" required="required" />
-                <button onClick={this.handleLogin.bind(this)} className="btn btn-primary btn-block btn-large">Let me in.</button>
+                <button onClick={this.props.onClick} className="btn btn-primary btn-block btn-large">Let me in.</button>
             </div>
             </div>
         )
@@ -54,11 +44,11 @@ class Signup extends Component{
             <div className= "signup-form">
             <h2>Sign Up</h2>
             <div>
-                <input type="text" name="u" placeholder="Username" required="required" />
-                <input type="password" name="p" placeholder="Password" required="required" />
-                <input type="password" name="p" placeholder="Confirm Password" required="required" />
+                <input ref="username" type="text" name="u" placeholder="Username" required="required" />
+                <input ref="password" type="password" name="p" placeholder="Password" required="required" />
+                <input ref="confirm_password" type="password" name="p" placeholder="Confirm Password" required="required" />
 
-                <button className="btn btn-primary btn-block btn-large">Create my account</button>
+                <button onClick={this.props.onClick} className="btn btn-primary btn-block btn-large">Create my account</button>
             </div>
             </div>
         )
@@ -76,16 +66,78 @@ class Dashboard extends Component{
         }
     }
 
+    handleLogin = () => {
+      const username = this.refs.login.refs.username.value;
+      const password = this.refs.login.refs.password.value;
+      if(username && password){
+        axios.get('localhost:3000/login', {
+          params: {
+            username: username,
+            password: password,
+          }
+        })
+        .then(function (response) {
+          console.log(response);
+          this.setState({
+            errMes: ""
+          })
+          window.location = '/usersite';
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      }
+      else{
+        this.setState({
+          errMes: "Username or Password is invalid!"
+        })
+      }
+    }
+    handleSignup = () => {
+      const username = this.refs.signup.refs.username.value;
+      const password = this.refs.signup.refs.password.value;
+      const confirm_password = this.refs.signup.refs.confirm_password.value
+      if(username && password && confirm_password){
+        if(password === confirm_password){
+          axios.post('localhost:3000/signup', {
+            params: {
+              username: username,
+              password: password,
+            }
+          })
+          .then(function (response) {
+            console.log(response);
+            this.setState({
+              errMes: "Success !!!"
+            })
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
 
+        }
+        else{
+          this.setState({
+            errMes: "Please confirm right password !"
+          })
+        }
+      }
+      else{
+        this.setState({
+          errMes: "You missed something ?"
+        })
+      }
+    }
 
     renderForm = () => {
         switch(this.state.mainStage){
             case STAGE_1:
                 return <History/>
             case STAGE_2:
-                return <Signup/>
+                return <Signup ref="signup" onClick = {this.handleSignup.bind(this)}/>
             case STAGE_3:
-                return <Login/>
+                return <Login ref="login" onClick = {this.handleLogin.bind(this)}/>
+                default: console.log("error")
         }
     }
 
@@ -102,7 +154,14 @@ class Dashboard extends Component{
 
     componentWillMount()
     {
-
+      axios.get('localhost:3000/inithistory', {
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     }
 
     render(){
