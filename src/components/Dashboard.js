@@ -9,7 +9,7 @@ class History extends Component{
     render(){
         return(
             <div className= "history">
-                <h2>History</h2>
+                <h2>System History</h2>
                 <ul id ="list" className="list-group">
                     {this.props.renderList}
                 </ul>
@@ -173,6 +173,7 @@ class Dashboard extends Component{
     componentWillMount()
     {
       var self = this;
+      sessionStorage.clear();
       axios.get('http://localhost:3000/inithistory')
       .then(function (response) {
         var history = [];
@@ -182,6 +183,7 @@ class Dashboard extends Component{
           mes = data[i].from_user + " sent to " + data[i].to_user + " " + data[i].money + " coins on " + data[i].date;
           history.push(<li key={i} className="list-group-item">{mes}</li>);
         }
+        sessionStorage.history = JSON.stringify(data);
         self.setState({
           history: history,
         })

@@ -7,7 +7,7 @@ class UserSite extends Component{
         this.state = {
             username: sessionStorage.username,
             money: sessionStorage.money,
-            history:[],
+            myhistory:[],
         }
     }
 
@@ -35,7 +35,8 @@ class UserSite extends Component{
       const from_user = this.state.username;
       const to_user = this.refs.to_user.value;
       const sendmoney = parseFloat(this.refs.money.value);
-      if(to_user && sendmoney && sendmoney <= this.state.money){
+      var myhistory = this.state.myhistory;
+      if(to_user && sendmoney && sendmoney <= this.state.money && to_user !== from_user){
         axios.post('http://localhost:3000/sendmoney', {
             from_user: from_user,
             to_user: to_user,
@@ -43,19 +44,26 @@ class UserSite extends Component{
             date: today,
         })
         .then(function (response) {
-          console.log(response.data);
-          sessionStorage.money = self.state.money - sendmoney;
-          self.setState({
-            money: self.state.money - sendmoney,
-          })
+            if(response && response.data !== "failed"){
+              var mes = "You sent " + to_user + " " + sendmoney + " coins on " + today;
+              var item = <li key={myhistory.length} className="list-group-item">{mes}</li>;
+              myhistory = myhistory.concat(item);
+              sessionStorage.money = self.state.money - sendmoney;
+              self.setState({
+                money: sessionStorage.money,
+                myhistory: myhistory
+              })
+              sessionStorage.history = JSON.stringify(JSON.parse(sessionStorage.history).concat(response.data));
+              alert("Transaction success !!!");
+            }
+          else alert("You wanna send money to ?");
         })
         .catch(function (error) {
           console.log(error);
         });
       }
       else{
-        console.log(this.state.money)
-        alert("Something not right !")
+        alert("Something not right !");
       }
     }
 
@@ -76,10 +84,9 @@ class UserSite extends Component{
     renderHistory = () => {
         return (
             <div className= "history-form">
-            <h4>History</h4>
+            <h4>My recent history</h4>
             <ul id ="list" className="list-group">
-
-            <li className="list-group-item">Cras justo odio</li>
+            {this.state.myhistory}
             </ul>
             </div>
         )
@@ -89,6 +96,28 @@ class UserSite extends Component{
       sessionStorage.clear();
       window.location ="/";
     }
+
+    componentDidMount(){
+      const history = JSON.parse(sessionStorage.history);
+      var mes = "";
+      var myhistory = [];
+
+      for(let i=0;i<history.length;i++){
+        console.log(history);
+        if(history[i].from_user === this.state.username){
+          mes = "You sent " + history[i].to_user + " " + history[i].money + " coins on " + history[i].date;
+          myhistory.push(<li key={i} className="list-group-item">{mes}</li>);
+        }
+        if(history[i].to_user === this.state.username){
+          mes = "You received "+ history[i].money + " coins from " + history[i].from_user +" on " + history[i].date;
+          myhistory.push(<li key={i} className="list-group-item">{mes}</li>)
+        }
+      }
+      this.setState({
+         myhistory: myhistory
+      })
+    }
+
     render(){
         if(sessionStorage.length === 0)
           return "Get the fuck out of here!!!";
