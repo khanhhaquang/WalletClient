@@ -6,15 +6,12 @@ const STAGE_3 = 3;
 
 class History extends Component{
 
-    renderList = () =>{
-    }
-
     render(){
         return(
             <div className= "history">
                 <h2>History</h2>
                 <ul id ="list" className="list-group">
-                    <li className="list-group-item">Cras justo odio</li>
+                    {this.props.renderList}
                 </ul>
             </div>
         )
@@ -67,51 +64,72 @@ class Dashboard extends Component{
     }
 
     handleLogin = () => {
+      const self = this;
       const username = this.refs.login.refs.username.value;
       const password = this.refs.login.refs.password.value;
       if(username && password){
-        axios.get('localhost:3000/login', {
-          params: {
+        axios.get('http://localhost:3000/login', {
+          params:{
             username: username,
             password: password,
           }
         })
         .then(function (response) {
-          console.log(response);
-          this.setState({
-            errMes: ""
-          })
-          window.location = '/usersite';
+          if(response && response.data !== "failed"){
+            var data = response.data;
+            sessionStorage.username = data.username;
+            sessionStorage.money = data.money;
+            self.setState({
+              errMes: ""
+            })
+            window.location = '/usersite';
+          }
+          else{
+            self.setState({
+              errMes: "Wrong username or password !"
+            })
+          }
         })
         .catch(function (error) {
           console.log(error);
+          self.setState({
+            errMes: "Network error !"
+          })
         });
       }
       else{
-        this.setState({
+        self.setState({
           errMes: "Username or Password is invalid!"
         })
       }
     }
     handleSignup = () => {
+      const self = this;
       const username = this.refs.signup.refs.username.value;
       const password = this.refs.signup.refs.password.value;
       const confirm_password = this.refs.signup.refs.confirm_password.value
       if(username && password && confirm_password){
         if(password === confirm_password){
-          axios.post('localhost:3000/signup', {
-            params: {
+          axios.post('http://localhost:3000/signup', {
               username: username,
               password: password,
-            }
           })
           .then(function (response) {
             console.log(response);
-            this.setState({
-              errMes: "Success !!!"
-            })
+            if(response && response.data !== "exist"){
+              self.setState({
+                errMes: "Success !!!",
+                mainStage: STAGE_3,
+              })}
+            else {
+              self.setState({
+                errMes: "This username has been used !"
+              })}
           })
           .catch(function (error) {
+            self.setState({
+              errMes: "Network error !"
+            })
             console.log(error);
           });
 
@@ -132,12 +150,12 @@ class Dashboard extends Component{
     renderForm = () => {
         switch(this.state.mainStage){
             case STAGE_1:
-                return <History/>
+                return <History renderList={this.state.history}/>
             case STAGE_2:
                 return <Signup ref="signup" onClick = {this.handleSignup.bind(this)}/>
             case STAGE_3:
                 return <Login ref="login" onClick = {this.handleLogin.bind(this)}/>
-                default: console.log("error")
+            default: console.log("error");
         }
     }
 
@@ -154,10 +172,19 @@ class Dashboard extends Component{
 
     componentWillMount()
     {
-      axios.get('localhost:3000/inithistory', {
-      })
+      var self = this;
+      axios.get('http://localhost:3000/inithistory')
       .then(function (response) {
-        console.log(response);
+        var history = [];
+        var mes = "";
+        var data = response.data;
+        for(let i =0 ;i<data.length;i++){
+          mes = data[i].from_user + " sent to " + data[i].to_user + " " + data[i].money + " coins on " + data[i].date;
+          history.push(<li key={i} className="list-group-item">{mes}</li>);
+        }
+        self.setState({
+          history: history,
+        })
       })
       .catch(function (error) {
         console.log(error);

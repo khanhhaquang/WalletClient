@@ -1,23 +1,61 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 class UserSite extends Component{
     constructor(props){
         super(props);
         this.state = {
-            username: "khanh",
-            money: 1000,
+            username: sessionStorage.username,
+            money: sessionStorage.money,
+            history:[],
         }
     }
 
+    getDate = () => {
+      var today = new Date();
+      var dd = today.getDate();
+      var mm = today.getMonth()+1; //January is 0!
+      var yyyy = today.getFullYear();
+
+      if(dd<10) {
+          dd = '0'+dd
+      }
+
+      if(mm<10) {
+          mm = '0'+mm
+      }
+
+      today = mm + '/' + dd + '/' + yyyy;
+      return today;
+    }
+
     handleSendmoney = () =>{
+      var self = this;
+      var today = self.getDate();
       const from_user = this.state.username;
       const to_user = this.refs.to_user.value;
-      const money = this.refs.money.value;
-      if(to_user && money){
-
+      const sendmoney = parseFloat(this.refs.money.value);
+      if(to_user && sendmoney && sendmoney <= this.state.money){
+        axios.post('http://localhost:3000/sendmoney', {
+            from_user: from_user,
+            to_user: to_user,
+            money: sendmoney,
+            date: today,
+        })
+        .then(function (response) {
+          console.log(response.data);
+          sessionStorage.money = self.state.money - sendmoney;
+          self.setState({
+            money: self.state.money - sendmoney,
+          })
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
       }
       else{
-        alert("You missed something ?")
+        console.log(this.state.money)
+        alert("Something not right !")
       }
     }
 
@@ -39,9 +77,9 @@ class UserSite extends Component{
         return (
             <div className= "history-form">
             <h4>History</h4>
-            <ul id ="list" class="list-group">
+            <ul id ="list" className="list-group">
 
-            <li class="list-group-item">Cras justo odio</li>
+            <li className="list-group-item">Cras justo odio</li>
             </ul>
             </div>
         )
@@ -52,6 +90,8 @@ class UserSite extends Component{
       window.location ="/";
     }
     render(){
+        if(sessionStorage.length === 0)
+          return "Get the fuck out of here!!!";
         return(
             <div className="usersite">
             <h1>{this.state.username}'s wallet</h1>
