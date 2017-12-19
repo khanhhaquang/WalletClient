@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import * as actions from './../actions/userActions.js'
+import {connect} from 'react-redux';
 
 class UserSite extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            username: sessionStorage.username,
-            money: sessionStorage.money,
-            myhistory:[],
-        }
-    }
 
     getDate = () => {
       var today = new Date();
@@ -30,37 +24,13 @@ class UserSite extends Component{
     }
 
     handleSendmoney = () =>{
-      var self = this;
-      var today = self.getDate();
-      const from_user = this.state.username;
+      var today = this.getDate();
+      const from_user = this.props.username;
       const to_user = this.refs.to_user.value;
       const sendmoney = parseFloat(this.refs.money.value);
-      var myhistory = this.state.myhistory;
-      if(to_user && sendmoney && sendmoney <= this.state.money && to_user !== from_user){
-        axios.post('http://localhost:3000/sendmoney', {
-            from_user: from_user,
-            to_user: to_user,
-            money: sendmoney,
-            date: today,
-        })
-        .then(function (response) {
-            if(response && response.data !== "failed"){
-              var mes = "You sent " + to_user + " " + sendmoney + " coins on " + today;
-              var item = <li key={myhistory.length} className="list-group-item">{mes}</li>;
-              myhistory = myhistory.concat(item);
-              sessionStorage.money = self.state.money - sendmoney;
-              self.setState({
-                money: sessionStorage.money,
-                myhistory: myhistory
-              })
-              sessionStorage.history = JSON.stringify(JSON.parse(sessionStorage.history).concat(response.data));
-              alert("Transaction success !!!");
-            }
-          else alert("You wanna send money to ?");
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+      var myhistory = this.props.myhistory;
+      if(to_user && sendmoney && sendmoney <= this.props.money && to_user !== from_user){
+        this.props.dispatch(actions.sendMoney(from_user,to_user,sendmoney,today))
       }
       else{
         alert("Something not right !");
@@ -86,7 +56,9 @@ class UserSite extends Component{
             <div className= "history-form">
             <h4>My recent history</h4>
             <ul id ="list" className="list-group">
-            {this.state.myhistory}
+              {this.props.myhistory.map((data,index)=>
+                <li key={index} className="list-group-item">{data}</li>
+              )}
             </ul>
             </div>
         )
@@ -103,19 +75,16 @@ class UserSite extends Component{
       var myhistory = [];
 
       for(let i=0;i<history.length;i++){
-        console.log(history);
-        if(history[i].from_user === this.state.username){
+        if(history[i].from_user === this.props.username){
           mes = "You sent " + history[i].to_user + " " + history[i].money + " coins on " + history[i].date;
-          myhistory.push(<li key={i} className="list-group-item">{mes}</li>);
+          myhistory.push(mes)
         }
-        if(history[i].to_user === this.state.username){
+        if(history[i].to_user === this.props.username){
           mes = "You received "+ history[i].money + " coins from " + history[i].from_user +" on " + history[i].date;
-          myhistory.push(<li key={i} className="list-group-item">{mes}</li>)
+          myhistory.push(mes)
         }
       }
-      this.setState({
-         myhistory: myhistory
-      })
+      this.props.dispatch(actions.initMyhistory(myhistory));
     }
 
     render(){
@@ -123,14 +92,21 @@ class UserSite extends Component{
           return "Get the fuck out of here!!!";
         return(
             <div className="usersite">
-            <h1>{this.state.username}'s wallet</h1>
+            <h1>{this.props.username} 's wallet</h1>
             <button type="button" onClick={this.handleLogout.bind(this)} id="logout-btn" className="btn btn-danger btn-block btn-large">Log out</button>
-            <h3>You're having: {this.state.money}</h3>
+            <h3>You're having: {this.props.money}</h3>
             {this.renderSendMoney()}
             {this.renderHistory()}
             </div>
         )
     }
 }
+const mapStateToProps = (state) =>{
+    return {
+      username: state.userData.username,
+      money: state.userData.money,
+      myhistory: state.userData.myhistory,
+    }
+}
 
-export default UserSite;
+export default connect(mapStateToProps)(UserSite);
